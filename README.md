@@ -5,7 +5,7 @@
     git clone https://github.com/bleedcloudVIII/buyDash.git
     cd buyDash
     python -m venv .venv
-    venv/Scripts/Activate
+    .venv/Scripts/Activate
     ```
 
 2. Установка зависимостей
