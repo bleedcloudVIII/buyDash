@@ -78,18 +78,19 @@ class FileWorker:
                     if table:
                         name_seller = any(d.get("seller") == row.seller for d in table)
                         name_product = any(d.get("product") == row.product for d in table)
-                        if name_seller and name_product:
+                        name_qty = any(d.get("qty") == row.qty for d in table)
+                        if name_seller and name_product and name_qty:
                             for dict in table:
-                                if dict.get("seller")==row.seller and dict.get("product")==row.product:
+                                if dict.get("seller")==row.seller and dict.get("product")==row.product and dict.get("qty")==row.qty:
                                     dict["count"]+=row.count
                                     dict["all"]+=row.all
                         else:
-                            row_for_res = vars(row)
+                            row_for_res = vars(row).copy()
                             del row_for_res["remark"]
                             del row_for_res["date"]
                             table.append(row_for_res)
                     else:
-                        row_for_res = vars(row)
+                        row_for_res = vars(row).copy()
                         del row_for_res["remark"]
                         del row_for_res["date"]
                         table.append(row_for_res)
