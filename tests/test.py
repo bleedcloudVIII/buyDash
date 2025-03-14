@@ -1,10 +1,13 @@
 import unittest
 from back.file_worker import FileWorker
+import os
 
 class TestFileWorker(unittest.TestCase):
 
     def test_empty_file(self):
-        fw = FileWorker("./data/empty.xlsx")
+        script_dir = os.path.dirname(os.path.abspath(__file__))
+        path = os.path.join(script_dir, "data", "empty.xlsx")
+        fw = FileWorker(path)
         fw.file_read()
 
         data = fw.piechart_one_company(1, 2, "Google")
@@ -23,7 +26,9 @@ class TestFileWorker(unittest.TestCase):
         self.assertEqual(data, {})
 
     def test_one_list_file(self):
-        fw = FileWorker("./data/one_list.xlsx")
+        script_dir = os.path.dirname(os.path.abspath(__file__))
+        path = os.path.join(script_dir, "data", "one_list.xlsx")
+        fw = FileWorker(path)
         fw.file_read()
 
         data = fw.piechart_one_company(1, 2, "Google")
@@ -63,7 +68,9 @@ class TestFileWorker(unittest.TestCase):
         self.assertEqual(data, correct_data)
 
     def test_bar_chart(self):
-        fw = FileWorker("./data/test_data.xlsx")
+        script_dir = os.path.dirname(os.path.abspath(__file__))
+        path = os.path.join(script_dir, "data", "test_data.xlsx")
+        fw = FileWorker(path)
         fw.file_read()
 
         data = fw.bar_chart(1, 1)
@@ -95,7 +102,8 @@ class TestFileWorker(unittest.TestCase):
 
     def test_pie_chart_one_company(self):
         pass
-        # fw = FileWorker("./data/test_pie_chart.xlsx")
+        # path = os.path.abspath("./data/test_data.xlsxxlsx")
+        # fw = FileWorker(path)
         # fw.file_read()
         #
         # data = fw.piechart_one_company(1, 2, "X")
@@ -107,7 +115,9 @@ class TestFileWorker(unittest.TestCase):
         # self.assertEqual(data, correct_data)
 
     def test_pie_chart(self):
-        fw = FileWorker("./data/test_data.xlsx")
+        script_dir = os.path.dirname(os.path.abspath(__file__))
+        path = os.path.join(script_dir, "data", "test_data.xlsx")
+        fw = FileWorker(path)
         fw.file_read()
 
         data = fw.piechart_expense(1, 1)
@@ -123,7 +133,9 @@ class TestFileWorker(unittest.TestCase):
         self.assertEqual(data, correct_data)
 
     def test_table_one_company(self):
-        fw = FileWorker("./data/test_data.xlsx")
+        script_dir = os.path.dirname(os.path.abspath(__file__))
+        path = os.path.join(script_dir, "data", "test_data.xlsx")
+        fw = FileWorker(path)
         fw.file_read()
 
         data = fw.table_for_company(1, 1, "X")
@@ -177,7 +189,9 @@ class TestFileWorker(unittest.TestCase):
         self.assertEqual(data, correct_data)
 
     def test_table_all_company(self):
-        fw = FileWorker("./data/test_data.xlsx")
+        script_dir = os.path.dirname(os.path.abspath(__file__))
+        path = os.path.join(script_dir, "data", "test_data.xlsx")
+        fw = FileWorker(path)
         fw.file_read()
 
         data = fw.table_for_companies(1, 1)
