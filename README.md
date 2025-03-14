@@ -20,17 +20,17 @@
 
 ## Вытягивание изменений
 
-    ```shell
-    git pull origin
-    ```
+   ```shell
+   git pull origin
+   ```
 
 ## Отправка изменений
 
-    ```shell
-    git add .
-    git commit -m "message"
-    git push -u origin master
-    ```
+   ```shell
+   git add .
+   git commit -m "message"
+   git push -u origin master
+   ```
 
 ## Запуск тестов
 
