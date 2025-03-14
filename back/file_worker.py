@@ -51,6 +51,7 @@ class FileWorker:
     def view_company(self):
         for name in self.company_names:
             print(name)
+
     def piechart_one_company(self,first_month,last_month,kompany):
         count_month = first_month
         if first_month>last_month:
@@ -141,8 +142,8 @@ class FileWorker:
         result_table = []
         return self.table_for(first_month,last_month,result_table,company)
 
-file_workers=FileWorker('C:/Users/Grey/Desktop/buyDashBack/buyDash/data.xlsx')
-file_workers.file_read()
+# file_workers=FileWorker('C:/Users/Grey/Desktop/buyDashBack/buyDash/data.xlsx')
+# file_workers.file_read()
 # file_workers.view_data()
 # file_workers.view_company()
 # piechart = file_workers.piechart_one_company(2,1,"Гугл")
@@ -164,7 +165,7 @@ file_workers.file_read()
 # for key, value in piechart_expense.items():
 #     print(f"Key: {key}, Value: {value}")
 
-table_company=file_workers.table_for_company(1,2,"Гугл")
-for dict in table_company:
-    for key, value in dict.items():
-        print(f"Key: {key}, Value: {value}")
+# table_company=file_workers.table_for_company(1,2,"Гугл")
+# for dict in table_company:
+#     for key, value in dict.items():
+#         print(f"Key: {key}, Value: {value}")
