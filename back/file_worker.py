@@ -52,6 +52,9 @@ class FileWorker:
         for name in self.company_names:
             print(name)
 
+    def get_company(self):
+        return self.company_names
+
     def piechart_one_company(self,first_month,last_month,kompany):
         count_month = first_month
         if first_month>last_month:
