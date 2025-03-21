@@ -4,3 +4,5 @@ env
 .env
 .vs
 .idea
+__pycache__/
+*.pyc

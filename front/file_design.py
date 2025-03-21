@@ -320,10 +320,3 @@ class MainWindow(QMainWindow):
             print(f"Данные сохранены в {json_file_path}")
         except Exception as e:
             print(f"Ошибка при сохранении данных в JSON: {e}")
-
-
-app = QApplication([])
-window = MainWindow()
-window.show()
-
-app.exec()
