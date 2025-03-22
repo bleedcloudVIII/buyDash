@@ -97,6 +97,8 @@ class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
 
+        self.selected_month = [1, 12]
+        
         self.side_panel_buttons = {
             "Открыть файл": self.open_file_dialog,
             "Выбрать месяц": self.select_month,
@@ -238,10 +240,17 @@ class MainWindow(QMainWindow):
         dialog = MonthDialog(self)
         if dialog.exec() == QDialog.Accepted:
             self.selected_month = dialog.get_selected_month()
-            # print(f"Выбран месяц: {self.selected_month}")
+            widget = self.stacked_widget.currentWidget()
+            widget_index = self.stacked_widget.currentIndex()
+            layout = widget.layout()
+            if widget_index == 0:
+                self.create_general_page(layout)
+            else:
+                self.create_company_page(layout)
+            
 
     def create_bar_chart_general(self, layout, start_month, end_month):
-        data = self.fw.bar_chart(1, 12)
+        data = self.fw.bar_chart(start_month, end_month)
         # TODO ....
         products = ["Товар1", "Товар2"]
         series = QStackedBarSeries()
@@ -278,7 +287,7 @@ class MainWindow(QMainWindow):
     def create_pie_chart_general(self, layout, start_month, end_month):
         series = QPieSeries()
         
-        data = self.fw.piechart_expense(1, 12)
+        data = self.fw.piechart_expense(start_month, end_month)
         
         for key, value in data.items():
             slice = series.append(key, value)
@@ -333,12 +342,15 @@ class MainWindow(QMainWindow):
         hbox_widget = QWidget()
         hbox_layout = QHBoxLayout(hbox_widget)
 
-        self.create_bar_chart_general(hbox_layout, 1, 12)
-        self.create_pie_chart_general(hbox_layout, 1, 12)
+        self.selected_month
+        print(self.select_month)
+
+        self.create_bar_chart_general(hbox_layout, self.selected_month[0], self.selected_month[1])
+        self.create_pie_chart_general(hbox_layout, self.selected_month[0], self.selected_month[1])
         
         layout.addWidget(hbox_widget)
         
-        self.create_table_general(layout, 1, 12)
+        self.create_table_general(layout, self.selected_month[0], self.selected_month[1])
         
     def create_company_page(self, layout, company, index):
         self.clear_layout(layout)

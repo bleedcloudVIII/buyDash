@@ -54,6 +54,23 @@ class FileWorker:
 
     def get_company(self):
         return self.company_names
+    
+    # Мб не понадобится
+    def get_month(self):
+        data = {}
+        for company_month, rows in self.data.items():
+            list_data = company_month.split('_')
+            try:
+                data[list_data[0]].append(list_data[1])
+            except:
+                data[list_data[0]] = []
+                data[list_data[0]].append(list_data[1])
+        
+        for key, value in data.items():
+            min_month = min(value)
+            max_month = max(value)
+            data[key] = [min_month, max_month]
+        return data
 
     def piechart_one_company(self,first_month,last_month,kompany):
         count_month = first_month
@@ -146,8 +163,11 @@ class FileWorker:
         result_table = []
         return self.table_for(first_month,last_month,result_table,company)
 
-# file_workers=FileWorker('C:/Users/Grey/Desktop/buyDashBack/buyDash/data.xlsx')
-# file_workers.file_read()
+file_workers=FileWorker('C:/Users/Юрий/Desktop/buyDash/data.xlsx')
+file_workers.file_read()
+
+print(file_workers.get_month())
+
 # file_workers.view_data()
 # file_workers.view_company()
 # piechart = file_workers.piechart_one_company(2,1,"Гугл")
