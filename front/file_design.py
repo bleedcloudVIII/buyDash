@@ -16,9 +16,7 @@ class MonthDialog(QDialog):
     """
     def __init__(self, parent=None):
         super().__init__(parent)
-        self.setWindowTitle("Выберите месяц")
-        self.setFixedSize(300, 150)
-        # Устанавливаем стиль для окна
+
         self.setStyleSheet("""
                     QDialog {
                         background-color: #f0f0f0;  /* Светло-серый фон */
@@ -38,26 +36,6 @@ class MonthDialog(QDialog):
                         font-size: 16px;
                         color: #333333;
                     }
-                    QComboBox:hover {
-                        border-color: #999999;  /* Темно-серая рамка при наведении */
-                    }
-                    QComboBox::drop-down {
-                        subcontrol-origin: padding;
-                        subcontrol-position: top right;
-                        width: 30px;
-                        border-left: 1px solid #cccccc;
-                        background-color: #e0e0e0;  /* Серый фон для стрелочки */
-                        border-radius: 0 5px 5px 0;  /* Скругление справа */
-                    }
-                    QComboBox::down-arrow {
-                        width: 16px;
-                        height: 16px;
-                    }
-                    QComboBox QAbstractItemView {
-                        background-color: white;
-                        selection-background-color: #e0e0e0;  /* Цвет выделения */
-                        font-size: 16px;
-                    }
                     QPushButton {
                         background-color: #4CAF50;  /* Зеленый цвет */
                         color: white;
@@ -72,26 +50,45 @@ class MonthDialog(QDialog):
                     }
                 """)
 
+        self.setWindowTitle("Выбор периода")
+        self.setFixedSize(450, 350)
+
         layout = QVBoxLayout(self)
 
-        # Выпадающий список для выбора месяца
-        self.month_combo = QComboBox()
-        self.month_combo.addItems([
+        self.label = QLabel("Выберите промежуток времени:", self)
+        layout.addWidget(self.label)
+
+        self.first_month_combo = QComboBox(self)
+        self.first_month_combo.addItems([
             "Январь", "Февраль", "Март", "Апрель", "Май", "Июнь",
             "Июль", "Август", "Сентябрь", "Октябрь", "Ноябрь", "Декабрь"
         ])
-        layout.addWidget(self.month_combo)
+        layout.addWidget(QLabel("Первый месяц:"))
+        layout.addWidget(self.first_month_combo)
 
-        # Кнопка "ОК"
-        self.ok_button = QPushButton("ОК")
-        self.ok_button.clicked.connect(self.accept)
-        layout.addWidget(self.ok_button)
+        self.second_month_combo = QComboBox(self)
+        self.second_month_combo.addItems([
+            "Январь", "Февраль", "Март", "Апрель", "Май", "Июнь",
+            "Июль", "Август", "Сентябрь", "Октябрь", "Ноябрь", "Декабрь"
+        ])
+        layout.addWidget(QLabel("Второй месяц:"))
+        layout.addWidget(self.second_month_combo)
+
+        ok_button = QPushButton("ОК")
+        ok_button.clicked.connect(self.accept)
+        layout.addWidget(ok_button)
 
     def get_selected_month(self):
         """
         Возвращает номер выбранного месяца (1-12).
         """
-        return self.month_combo.currentIndex() + 1  # Индексация с 0, поэтому +1
+        months_dict = {
+            "Январь": 1, "Февраль": 2, "Март": 3, "Апрель": 4, "Май": 5, "Июнь": 6,
+            "Июль": 7, "Август": 8, "Сентябрь": 9, "Октябрь": 10, "Ноябрь": 11, "Декабрь": 12
+        }
+        print([months_dict.get(self.first_month_combo.currentText()), months_dict.get(self.second_month_combo.currentText())])
+        return [months_dict.get(self.first_month_combo.currentText()), months_dict.get(self.second_month_combo.currentText())]
+
 
 
 class MainWindow(QMainWindow):
@@ -115,8 +112,6 @@ class MainWindow(QMainWindow):
         page = QWidget()  
         layout = QVBoxLayout(page)
         self.create_general_page(layout)
-        # label = QLabel(f"Информация Главная")
-        # layout.addWidget(label)
         self.stacked_widget.addWidget(page)
         func = lambda checked, idx=0: self.stacked_widget.setCurrentIndex(idx)
         self.side_panel_buttons["Главная"] = func
@@ -233,17 +228,10 @@ class MainWindow(QMainWindow):
                 print("Выбранный файл не является файлом Excel.")
 
     def select_month(self):
-        pass
-        # Проверяем, что файл был выбран
-        # if not self.file_path:
-        #     print("Сначала выберите файл Excel.")
-        #     return
-
-        # Создаем диалоговое окно для выбора месяца
         dialog = MonthDialog(self)
         if dialog.exec() == QDialog.Accepted:
             self.selected_month = dialog.get_selected_month()
-            print(f"Выбран месяц: {self.selected_month}")
+            # print(f"Выбран месяц: {self.selected_month}")
 
     def create_general_page(self, layout):
         label = QLabel(f"Информация Главная")
