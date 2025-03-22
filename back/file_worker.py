@@ -72,6 +72,14 @@ class FileWorker:
             data[key] = [min_month, max_month]
         return data
 
+    def get_products(self):
+        products = []
+        for company, rows in self.data.items():
+            for row in rows:
+                if row.product not in products:
+                    products.append(row.product)
+        return products
+
     def piechart_one_company(self,first_month,last_month,kompany):
         count_month = first_month
         if first_month>last_month:

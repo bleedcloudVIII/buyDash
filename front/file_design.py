@@ -88,7 +88,6 @@ class MonthDialog(QDialog):
             "Январь": 1, "Февраль": 2, "Март": 3, "Апрель": 4, "Май": 5, "Июнь": 6,
             "Июль": 7, "Август": 8, "Сентябрь": 9, "Октябрь": 10, "Ноябрь": 11, "Декабрь": 12
         }
-        print([months_dict.get(self.first_month_combo.currentText()), months_dict.get(self.second_month_combo.currentText())])
         return [months_dict.get(self.first_month_combo.currentText()), months_dict.get(self.second_month_combo.currentText())]
 
 
@@ -251,8 +250,7 @@ class MainWindow(QMainWindow):
 
     def create_bar_chart_general(self, layout, start_month, end_month):
         data = self.fw.bar_chart(start_month, end_month)
-        # TODO ....
-        products = ["Товар1", "Товар2"]
+        products = self.fw.get_products()
         series = QStackedBarSeries()
         
         for p in products:
@@ -343,7 +341,6 @@ class MainWindow(QMainWindow):
         hbox_layout = QHBoxLayout(hbox_widget)
 
         self.selected_month
-        print(self.select_month)
 
         self.create_bar_chart_general(hbox_layout, self.selected_month[0], self.selected_month[1])
         self.create_pie_chart_general(hbox_layout, self.selected_month[0], self.selected_month[1])
