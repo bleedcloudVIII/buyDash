@@ -98,88 +98,34 @@ class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
 
-        self.setWindowTitle("Мое приложение с боковой панелью")  # заголовок окна
-        self.showFullScreen()  # окно на весь экран
-        central_widget = QWidget()  # Создаем главный виджет
-        self.setCentralWidget(central_widget)  # устанавливаем его в центральную область
-        self.main_layout = QHBoxLayout(central_widget)  # основной горизонтальный layout
+        self.side_panel_buttons = {
+            "Открыть файл": self.open_file_dialog,
+            "Выбрать месяц": self.select_month,
+            "Главная": None
+        }
 
-        # Создаем боковую панель (зеленую)
-        self.side_panel = QWidget()
-        self.side_panel.setStyleSheet("background-color: PaleGreen;")
-        self.side_panel_layout = QVBoxLayout(self.side_panel)
-        self.side_panel.setFixedWidth(250)  # Фиксированная ширина
+        self.setWindowTitle("Мое приложение с боковой панелью")
+        self.showFullScreen()
+        central_widget = QWidget()
+        self.setCentralWidget(central_widget)
+        self.main_layout = QHBoxLayout(central_widget)
+        self.stacked_widget = QStackedWidget()
+        
+        # Для кнопки "Главная"
+        page = QWidget()  
+        layout = QVBoxLayout(page)
+        self.create_general_page(layout)
+        # label = QLabel(f"Информация Главная")
+        # layout.addWidget(label)
+        self.stacked_widget.addWidget(page)
+        func = lambda checked, idx=0: self.stacked_widget.setCurrentIndex(idx)
+        self.side_panel_buttons["Главная"] = func
 
-        self.main_layout.addWidget(self.side_panel)
-
-        # Добавляем название приложения в верхнюю часть боковой панели
-        app_name_label = QLabel("BuyDash")
-        app_name_label.setStyleSheet("""
-            QLabel {
-                color: white;
-                font-size: 45px;
-                font-weight: bold;
-                padding: 10px;
-            }
-        """)
-        app_name_label.setAlignment(Qt.AlignCenter)  # текст по центру
-        app_name_label.setFixedHeight(80)  # Фиксированная высота для надписи
-        self.side_panel_layout.addWidget(app_name_label)  # Добавляем название в layout
-
-        # Кнопки для основных действий
-        self.buttons = []
-        button_texts = ["Открыть файл", "Выбрать месяц", "Главная"]
-        for text in button_texts:
-            button = QPushButton(text)  # Устанавливаем текст кнопки
-            button.setStyleSheet("""
-                    QPushButton {
-                        background-color: lightgreen;
-                        color: white;
-                        font-size: 18px;
-                        padding: 20px;
-                        font-weight: bold;  
-                        border: none;
-                        text-align: center;
-                        border: 2px solid white;  /* Серая обводка */
-                    }
-                    QPushButton:hover {
-                        background-color: darkgreen;
-                        color: white;
-                    }
-                """)
-            self.buttons.append(button)
-            self.side_panel_layout.addWidget(button)
-
-        # Группа для кнопок компаний
-        self.companies_group = QGroupBox("Компании")
-        self.companies_group.setStyleSheet("""
-            QGroupBox {
-                color: white;
-                font-size: 18px;
-                font-weight: bold;
-                border: 2px solid white;
-                border-radius: 5px;
-                margin-top: 10px;
-                padding-top: 15px;
-            }
-        """)
-
-        main_scroll_area = QScrollArea()  # QScrollArea для основной области
-        main_scroll_area.setWidgetResizable(True)  # Разрешаем изменение размера содержимого
-        self.stacked_widget = QStackedWidget()  # виджет для отображения вкладок
-        main_scroll_area.setWidget(self.stacked_widget)  # Добавляем stacked_widget в QScrollArea
-        self.main_layout.addWidget(main_scroll_area)  # QScrollArea в основной layout
-
-        # Создаем вкладки
-        for i in range(len(button_texts)):
-            page = QWidget()
-            layout = QVBoxLayout(page)
-            self.stacked_widget.addWidget(page)
-
-        for i, button in enumerate(self.buttons):
-            button.clicked.connect(lambda checked, idx=i: self.stacked_widget.setCurrentIndex(idx))
-
-        # Создаем кнопку "Выход" с крестиком
+        self.create_side_panel()
+        self.create_exit_button()
+        
+        
+    def create_exit_button(self):
         exit_button = QPushButton("×")
         exit_button.setStyleSheet("""
             QPushButton {
@@ -198,28 +144,87 @@ class MainWindow(QMainWindow):
         """)
         exit_button.setFixedSize(30, 30)
         exit_button.clicked.connect(self.close)
-        exit_button_container = QWidget()  # контейнер для кнопки "Выход" и размещаем её в верхнем правом углу
+        exit_button_container = QWidget()
         exit_button_layout = QHBoxLayout(exit_button_container)
         exit_button_layout.addStretch()
         exit_button_layout.addWidget(exit_button)
-        exit_button_layout.setContentsMargins(0, 0, 10, 0)  # Отступы для кнопки
+        exit_button_layout.setContentsMargins(0, 0, 10, 0)
         self.main_layout.addWidget(exit_button_container,
-                              alignment=Qt.AlignTop | Qt.AlignRight)  # Добавляем контейнер с кнопкой "Выход" в главный layout
+                              alignment=Qt.AlignTop | Qt.AlignRight)
+        
+    def create_button_side_panel(self, layout, text, func):
+        button = QPushButton(text)
+        button.setStyleSheet("""
+                QPushButton {
+                    background-color: lightgreen;
+                    color: white;
+                    font-size: 18px;
+                    padding: 20px;
+                    font-weight: bold;  
+                    border: none;
+                    text-align: center;
+                    border: 2px solid white;  /* Серая обводка */
+                }
+                QPushButton:hover {
+                    background-color: darkgreen;
+                    color: white;
+                }
+            """)
+        
+        button.clicked.connect(func)
+            
+        layout.addWidget(button)
+        
+    def create_side_panel(self):
+        self.side_panel = QWidget()
+        self.side_panel.setStyleSheet("background-color: PaleGreen;")
+        self.side_panel_layout = QVBoxLayout(self.side_panel)
+        self.side_panel.setFixedWidth(250)
 
-        # Подключаем обработчики для кнопок
-        self.buttons[0].clicked.connect(self.open_file_dialog)  # Открыть файл
-        self.buttons[1].clicked.connect(self.select_month)  # Выбрать месяц
+        self.main_layout.addWidget(self.side_panel)
 
-        # Переменные для хранения данных
-        self.file_path = None  # Путь к файлу Excel
-        self.selected_month = None  # Выбранный месяц
+        app_name_label = QLabel("BuyDash")
+        app_name_label.setStyleSheet("""
+            QLabel {
+                color: white;
+                font-size: 45px;
+                font-weight: bold;
+                padding: 10px;
+            }
+        """)
+        app_name_label.setAlignment(Qt.AlignCenter)
+        app_name_label.setFixedHeight(80)
+        self.side_panel_layout.addWidget(app_name_label)
+        
+        for key, value in self.side_panel_buttons.items():
+            self.create_button_side_panel(self.side_panel_layout, key, value)
+            
+        self.companies_group = QGroupBox("Компании")
+        self.companies_group.setStyleSheet("""
+            QGroupBox {
+                color: white;
+                font-size: 18px;
+                font-weight: bold;
+                border: 2px solid white;
+                border-radius: 5px;
+                margin-top: 10px;
+                padding-top: 15px;
+            }
+        """)
+
+        main_scroll_area = QScrollArea()
+        main_scroll_area.setWidgetResizable(True)
+        
+
+        
+        main_scroll_area.setWidget(self.stacked_widget)
+        self.main_layout.addWidget(main_scroll_area)
+
 
     def open_file_dialog(self):
-        # Открываем диалог выбора файла
         file_path, _ = QFileDialog.getOpenFileName(self, "Выберите файл Excel", "", "Excel Files (*.xlsx *.xls)")
 
         if file_path:
-            # Проверяем, что файл имеет расширение .xlsx или .xls
             if file_path.endswith(('.xlsx', '.xls')):
                 self.fw = FileWorker(file_path)
                 self.fw.file_read()
@@ -228,10 +233,11 @@ class MainWindow(QMainWindow):
                 print("Выбранный файл не является файлом Excel.")
 
     def select_month(self):
+        pass
         # Проверяем, что файл был выбран
-        if not self.file_path:
-            print("Сначала выберите файл Excel.")
-            return
+        # if not self.file_path:
+        #     print("Сначала выберите файл Excel.")
+        #     return
 
         # Создаем диалоговое окно для выбора месяца
         dialog = MonthDialog(self)
@@ -239,84 +245,31 @@ class MainWindow(QMainWindow):
             self.selected_month = dialog.get_selected_month()
             print(f"Выбран месяц: {self.selected_month}")
 
-            # Фильтруем данные по выбранному месяцу
-            self.filter_data_by_month()
+    def create_general_page(self, layout):
+        label = QLabel(f"Информация Главная")
+        layout.addWidget(label)
 
-    def filter_data_by_month(self):
-        # Фильтрация данных по выбранному месяцу
-        if not self.selected_month:
-            print("Месяц не выбран.")
-            return
-
-        try:
-            # Читаем файл Excel
-            df = pd.read_excel(self.file_path)
-
-            # Фильтруем данные по выбранному месяцу (вторая строка, второй столбец)
-            # Предполагаем, что месяц указан во второй строке и втором столбце
-            month_column = df.iloc[1, 1]  # Вторая строка, второй столбец
-            filtered_data = df[df.iloc[:, 1] == self.selected_month]
-
-            # Сохраняем отфильтрованные данные в JSON
-            self.save_filtered_data_to_json(filtered_data)
-
-        except Exception as e:
-            print(f"Ошибка при фильтрации данных: {e}")
+    def create_company_page(self, layout, company, index):
+        label = QLabel(f"Информация о компании {company} - {index}")
+        layout.addWidget(label)
 
     def create_buttons_company(self):
-        # Пример данных из бэкенда: список компаний
         companies = self.fw.get_company()
         companies_layout = QVBoxLayout(self.companies_group)
         companies_scroll_area = QScrollArea()
-        companies_scroll_area.setWidgetResizable(True)  # Разрешаем изменение размера содержимого
-        companies_container = QWidget()  # Контейнер для кнопок компаний
-        companies_scroll_area.setWidget(companies_container)  # Устанавливаем контейнер в QScrollArea
+        companies_scroll_area.setWidgetResizable(True)
+        companies_container = QWidget()
+        companies_scroll_area.setWidget(companies_container)
         companies_container_layout = QVBoxLayout(companies_container)
-        companies_layout.addWidget(companies_scroll_area)  # QScrollArea в layout группу компаний
-        self.side_panel_layout.addWidget(self.companies_group)  # группа компаний на боковой панели
-        self.main_layout.addWidget(self.side_panel)  # боковая панель в основной layout
+        companies_layout.addWidget(companies_scroll_area)
+        self.side_panel_layout.addWidget(self.companies_group)
+        self.main_layout.addWidget(self.side_panel)
 
-        # Динамическое создание кнопок для компаний
-        self.company_buttons = []
-        for company in companies:
-            button = QPushButton(company)
-            button.setStyleSheet("""
-                        QPushButton {
-                            background-color: lightgreen;
-                            color: white;
-                            font-size: 18px;
-                            padding: 15px;
-                            font-weight: bold;  
-                            border: none;
-                            text-align: left;
-                            text-align: center;
-                            border: 2px solid white;  /* Серая обводка */
-                        }
-                        QPushButton:hover {
-                            background-color: darkgreen;
-                            color: white;
-                        }
-                    """)
-            self.company_buttons.append(button)
-            companies_container_layout.addWidget(button)
-
-            # # Создаем вкладки
-            for i in range(len(companies)):
-                page = QWidget()
-                layout = QVBoxLayout(page)
-                self.stacked_widget.addWidget(page)
-
-            for i, button in enumerate(self.buttons + self.company_buttons):
-                button.clicked.connect(lambda checked, idx=i: self.stacked_widget.setCurrentIndex(idx))
-
-    def save_filtered_data_to_json(self, data):
-        # Сохраняем отфильтрованные данные в JSON файл
-        json_file_path = os.path.join("..", "back", "filtered_data.json")
-        try:
-            # Преобразуем DataFrame в словарь и сохраняем в JSON
-            data_dict = data.to_dict(orient="records")
-            with open(json_file_path, "w", encoding="utf-8") as json_file:
-                json.dump(data_dict, json_file, indent=4, ensure_ascii=False)
-            print(f"Данные сохранены в {json_file_path}")
-        except Exception as e:
-            print(f"Ошибка при сохранении данных в JSON: {e}")
+        for index, company in enumerate(companies):
+            page = QWidget()  
+            layout = QVBoxLayout(page)
+            self.create_company_page(layout, company, index)
+            self.stacked_widget.addWidget(page)
+            func = lambda checked, idx=index+1: self.stacked_widget.setCurrentIndex(idx)
+            self.create_button_side_panel(companies_container_layout, company, func)
+        
