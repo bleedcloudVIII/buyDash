@@ -68,7 +68,7 @@ class FileWorker:
                             result_products[row.product]+=int(row.count)
                         else:
                             result_products[row.product]=int(row.count)
-                count_month+=1
+                    count_month+=1
         return result_products
     def table_for(self,first_month,last_month,table,company):
         count_month= first_month
@@ -142,18 +142,18 @@ class FileWorker:
         result_table = []
         return self.table_for(first_month,last_month,result_table,company)
 
-# file_workers=FileWorker('C:/Users/Grey/Desktop/buyDashBack/buyDash/data.xlsx')
-# file_workers.file_read()
+file_workers=FileWorker('C:/Users/Grey/Desktop/buyDashBack/buyDash/data.xlsx')
+file_workers.file_read()
 # file_workers.view_data()
 # file_workers.view_company()
 # piechart = file_workers.piechart_one_company(2,1,"Гугл")
 # for key, value in piechart.items():
 #     print(f"Key: {key}, Value: {value}")
 
-# table_companies=file_workers.table_for_companies(1,2)
-# for dict in table_companies:
-#     for key, value in dict.items():
-#         print(f"Key: {key}, Value: {value}")
+table_companies=file_workers.table_for_companies(1,2)
+for dict in table_companies:
+    for key, value in dict.items():
+        print(f"Key: {key}, Value: {value}")
 
 # bar_chart = file_workers.bar_chart(1,2)
 # for key, dict in bar_chart.items():
