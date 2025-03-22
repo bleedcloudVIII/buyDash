@@ -148,8 +148,7 @@ class MainWindow(QMainWindow):
         exit_button_layout.addStretch()
         exit_button_layout.addWidget(exit_button)
         exit_button_layout.setContentsMargins(0, 0, 10, 0)
-        self.main_layout.addWidget(exit_button_container,
-                              alignment=Qt.AlignTop | Qt.AlignRight)
+        self.main_layout.addWidget(exit_button_container, alignment=Qt.AlignTop | Qt.AlignRight)
         
     def create_button_side_panel(self, layout, text, func):
         button = QPushButton(text)
@@ -214,8 +213,6 @@ class MainWindow(QMainWindow):
         main_scroll_area = QScrollArea()
         main_scroll_area.setWidgetResizable(True)
         
-
-        
         main_scroll_area.setWidget(self.stacked_widget)
         self.main_layout.addWidget(main_scroll_area)
 
@@ -245,7 +242,7 @@ class MainWindow(QMainWindow):
 
     def create_bar_chart_general(self, layout, start_month, end_month):
         data = self.fw.bar_chart(1, 12)
-        print(data)
+        # TODO ....
         products = ["Товар1", "Товар2"]
         series = QStackedBarSeries()
         
@@ -358,7 +355,6 @@ class MainWindow(QMainWindow):
         companies_container_layout = QVBoxLayout(companies_container)
         companies_layout.addWidget(companies_scroll_area)
         self.side_panel_layout.addWidget(self.companies_group)
-        self.main_layout.addWidget(self.side_panel)
 
         for index, company in enumerate(companies):
             page = QWidget()  
