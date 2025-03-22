@@ -2,9 +2,11 @@ import json
 import os
 import pandas as pd
 from PySide6.QtWidgets import (
-    QApplication, QMainWindow, QWidget, QVBoxLayout, QHBoxLayout,
-    QPushButton, QStackedWidget, QLabel, QScrollArea, QGroupBox, QFileDialog, QDialog, QComboBox
+    QApplication, QMainWindow, QWidget, QVBoxLayout, QHBoxLayout, QTableWidget, QTableWidgetItem,
+    QPushButton, QStackedWidget, QLabel, QScrollArea, QGroupBox, QFileDialog, QDialog, QComboBox,
 )
+from PySide6.QtGui import QPainter
+from PySide6.QtCharts import QChart, QChartView, QBarSet, QStackedBarSeries, QBarCategoryAxis, QPieSeries
 from PySide6.QtCore import Qt
 
 from back.file_worker import FileWorker
@@ -101,6 +103,8 @@ class MainWindow(QMainWindow):
             "Главная": None
         }
 
+        self.fw = None
+
         self.setWindowTitle("Мое приложение с боковой панелью")
         self.showFullScreen()
         central_widget = QWidget()
@@ -110,8 +114,8 @@ class MainWindow(QMainWindow):
         
         # Для кнопки "Главная"
         page = QWidget()  
-        layout = QVBoxLayout(page)
-        self.create_general_page(layout)
+        self.general_layout = QVBoxLayout(page)
+        self.create_general_page(self.general_layout)
         self.stacked_widget.addWidget(page)
         func = lambda checked, idx=0: self.stacked_widget.setCurrentIndex(idx)
         self.side_panel_buttons["Главная"] = func
@@ -215,6 +219,12 @@ class MainWindow(QMainWindow):
         main_scroll_area.setWidget(self.stacked_widget)
         self.main_layout.addWidget(main_scroll_area)
 
+    def clear_layout(self, layout):
+        while layout.count():
+            item = layout.takeAt(0)
+            widget = item.widget()
+            if widget:
+                widget.deleteLater()
 
     def open_file_dialog(self):
         file_path, _ = QFileDialog.getOpenFileName(self, "Выберите файл Excel", "", "Excel Files (*.xlsx *.xls)")
@@ -233,11 +243,108 @@ class MainWindow(QMainWindow):
             self.selected_month = dialog.get_selected_month()
             # print(f"Выбран месяц: {self.selected_month}")
 
-    def create_general_page(self, layout):
-        label = QLabel(f"Информация Главная")
-        layout.addWidget(label)
+    def create_bar_chart_general(self, layout, start_month, end_month):
+        data = self.fw.bar_chart(1, 12)
+        print(data)
+        products = ["Товар1", "Товар2"]
+        series = QStackedBarSeries()
+        
+        for p in products:
+            prod_series = QBarSet(p)
+            
+            for company_spending in data.values():
+                is_append = False
+                for key, value in company_spending.items():
+                    if (key == p):
+                        prod_series.append(value)
+                        is_append = True
+            
+                if not is_append:
+                    prod_series.append(0)
 
+            series.append(prod_series)
+        
+        chart = QChart()
+        chart.addSeries(series)
+        chart.setTitle("Столбчатая диаграмма с наложением")
+
+        chart_view = QChartView(chart)
+        
+        categories = self.fw.get_company()
+        axis = QBarCategoryAxis()
+        axis.append(categories)
+        chart.createDefaultAxes()
+        chart.setAxisX(axis, series)
+        
+        layout.addWidget(chart_view)
+        
+    def create_pie_chart_general(self, layout, start_month, end_month):
+        series = QPieSeries()
+        
+        data = self.fw.piechart_expense(1, 12)
+        
+        for key, value in data.items():
+            slice = series.append(key, value)
+            slice.setLabelVisible(True)
+            slice.setLabel(f"{key} - {value}")
+
+        bar_chart = QChart()
+        bar_chart.addSeries(series)
+
+        bar_chart.legend().setVisible(True)
+        bar_chart.legend().setAlignment(Qt.AlignRight)
+
+        bar_chart_view = QChartView(bar_chart)
+        bar_chart_view.setRenderHint(QPainter.Antialiasing)
+
+        layout.addWidget(bar_chart_view)
+        
+    def create_table_general(self, layout, start_month, end_month):
+        
+        table = QTableWidget()
+        
+        table.setColumnCount(5)
+        
+        table.setHorizontalHeaderLabels(["Продавец", "Товар", "Количество", "Цена за единицу товара", "Общая стоимость"])
+        
+        data = self.fw.table_for_companies(start_month, end_month)
+        
+        table.setRowCount(len(data))
+        
+        table.setColumnWidth(0, 150)
+        table.setColumnWidth(1, 150)
+        table.setColumnWidth(2, 100)
+        table.setColumnWidth(3, 200)
+        table.setColumnWidth(4, 150)
+        
+        for index, row in enumerate(data):
+            table.setItem(index, 0, QTableWidgetItem(str(row['seller'])))
+            table.setItem(index, 1, QTableWidgetItem(str(row['product'])))
+            table.setItem(index, 2, QTableWidgetItem(str(row['count'])))
+            table.setItem(index, 3, QTableWidgetItem(str(row['qty'])))
+            table.setItem(index, 4, QTableWidgetItem(str(row['all'])))
+            
+        layout.addWidget(table)
+
+    def create_general_page(self, layout):
+        self.clear_layout(layout)
+        if self.fw is None:
+            label = QLabel(f"Выберите файл")
+            layout.addWidget(label)
+            return
+        
+        hbox_widget = QWidget()
+        hbox_layout = QHBoxLayout(hbox_widget)
+
+        self.create_bar_chart_general(hbox_layout, 1, 12)
+        self.create_pie_chart_general(hbox_layout, 1, 12)
+        
+        layout.addWidget(hbox_widget)
+        
+        self.create_table_general(layout, 1, 12)
+        
     def create_company_page(self, layout, company, index):
+        self.clear_layout(layout)
         label = QLabel(f"Информация о компании {company} - {index}")
         layout.addWidget(label)
 
@@ -261,3 +368,4 @@ class MainWindow(QMainWindow):
             func = lambda checked, idx=index+1: self.stacked_widget.setCurrentIndex(idx)
             self.create_button_side_panel(companies_container_layout, company, func)
         
+        self.create_general_page(self.general_layout)

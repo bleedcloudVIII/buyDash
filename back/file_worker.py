@@ -73,6 +73,7 @@ class FileWorker:
                             result_products[row.product]=int(row.count)
                 count_month+=1
         return result_products
+    
     def table_for(self,first_month,last_month,table,company):
         count_month= first_month
         for company_month, rows in self.data.items():
