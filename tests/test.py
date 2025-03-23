@@ -337,7 +337,8 @@ class TestFileWorker(unittest.TestCase):
         fw.file_read()
         
         data = fw.get_products()
-        correct_data = ["Product1", "Product2", "Product3", "Product4", "Product5"]
+        correct_data = ["Product1", "Product2", "Product4", "Product3", "Product5"]
+        self.assertEqual(data, correct_data)
         
     def test_all_companies(self):
         script_dir = os.path.dirname(os.path.abspath(__file__))
@@ -347,3 +348,5 @@ class TestFileWorker(unittest.TestCase):
         
         data = fw.get_company()
         correct_data = ["Google", "X"]
+        self.assertEqual(data, correct_data)
+        
