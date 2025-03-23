@@ -329,3 +329,21 @@ class TestFileWorker(unittest.TestCase):
             }
         ]
         self.assertEqual(data, correct_data)
+        
+    def test_all_products(self):
+        script_dir = os.path.dirname(os.path.abspath(__file__))
+        path = os.path.join(script_dir, "data", "test_data.xlsx")
+        fw = FileWorker(path)
+        fw.file_read()
+        
+        data = fw.get_products()
+        correct_data = ["Product1", "Product2", "Product3", "Product4", "Product5"]
+        
+    def test_all_companies(self):
+        script_dir = os.path.dirname(os.path.abspath(__file__))
+        path = os.path.join(script_dir, "data", "test_data.xlsx")
+        fw = FileWorker(path)
+        fw.file_read()
+        
+        data = fw.get_company()
+        correct_data = ["Google", "X"]
