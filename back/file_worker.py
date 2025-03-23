@@ -106,10 +106,9 @@ class FileWorker:
             if count_month<=last_month and name_company[0]==company and int(name_company[1])==count_month:
                 for row in rows:
                     if table:
-                        name_seller = any(d.get("seller") == row.seller for d in table)
-                        name_product = any(d.get("product") == row.product for d in table)
-                        name_qty = any(d.get("qty") == row.qty for d in table)
-                        if name_seller and name_product and name_qty:
+                        is_has_same_seller_product_qty = any(d["seller"] == row.seller and d["product"] == row.product and d["qty"] == row.qty for d in table)
+                        
+                        if is_has_same_seller_product_qty:
                             for dict in table:
                                 if dict.get("seller")==row.seller and dict.get("product")==row.product and dict.get("qty")==row.qty:
                                     dict["count"]+=row.count
@@ -130,7 +129,7 @@ class FileWorker:
     def table_for_companies(self,first_month,last_month):
         result_table = []
         for company in self.company_names:
-            result_table = self.table_for(first_month,last_month,result_table,company)
+            result_table = self.table_for(first_month, last_month, result_table, company)
         return result_table
        
     def bar_chart(self,first_month,last_month):
@@ -171,9 +170,11 @@ class FileWorker:
         result_table = []
         return self.table_for(first_month,last_month,result_table,company)
 
+file_workers = FileWorker("C:\\Users\\Юрий\\Desktop\\BuyDash\\tests\\data\\test_data.xlsx")
+file_workers.file_read()
 
-# file_workers.view_data()
-# file_workers.view_company()
+print(file_workers.table_for_companies(1, 3))
+
 # piechart = file_workers.piechart_one_company(2,1,"Гугл")
 # for key, value in piechart.items():
 #     print(f"Key: {key}, Value: {value}")

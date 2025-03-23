@@ -101,18 +101,18 @@ class TestFileWorker(unittest.TestCase):
         self.assertEqual(data, correct_data)
 
     def test_pie_chart_one_company(self):
-        pass
-        # path = os.path.abspath("./data/test_data.xlsxxlsx")
-        # fw = FileWorker(path)
-        # fw.file_read()
-        #
-        # data = fw.piechart_one_company(1, 2, "X")
-        # correct_data = {"Product1": 20, "Product2": 1, "Product5": 1}
-        # self.assertEqual(data, correct_data)
-        #
-        # data = fw.piechart_one_company(1, 1, "X")
-        # correct_data = {"Product1": 10, "Product2": 2}
-        # self.assertEqual(data, correct_data)
+        script_dir = os.path.dirname(os.path.abspath(__file__))
+        path = os.path.join(script_dir, "data", "test_data.xlsx")
+        fw = FileWorker(path)
+        fw.file_read()
+        
+        data = fw.piechart_one_company(1, 2, "X")
+        correct_data = {"Product1": 20, "Product2": 3, "Product5": 1}
+        self.assertEqual(data, correct_data)
+        
+        data = fw.piechart_one_company(1, 1, "X")
+        correct_data = {"Product1": 10, "Product2": 2}
+        self.assertEqual(data, correct_data)
 
     def test_pie_chart(self):
         script_dir = os.path.dirname(os.path.abspath(__file__))
@@ -129,7 +129,7 @@ class TestFileWorker(unittest.TestCase):
         self.assertEqual(data, correct_data)
 
         data = fw.piechart_expense(1, 3)
-        correct_data = {"Google": 1532, "X": 142}
+        correct_data = {"Google": 1642, "X": 142}
         self.assertEqual(data, correct_data)
 
     def test_table_one_company(self):
@@ -228,6 +228,52 @@ class TestFileWorker(unittest.TestCase):
             {
                 "seller": "Seller1",
                 "product": "Product1",
+                "count": 40,
+                "qty": 5,
+                "all": 200,
+                "unit": "шт."
+            },
+            {
+                "seller": "Seller2",
+                "product": "Product2",
+                "count": 5,
+                "qty": 10,
+                "all": 50,
+                "unit": "кг"
+            },
+            {
+                "seller": "Seller3",
+                "product": "Product4",
+                "count": 665,
+                "qty": 2,
+                "all": 1330,
+                "unit": "шт."
+            },
+            {
+                "seller": "Seller3",
+                "product": "Product3",
+                "count": 1,
+                "qty": 12,
+                "all": 12,
+                "unit": "кг"
+            },
+            {
+                "seller": "Seller3",
+                "product": "Product5",
+                "count": 1,
+                "qty": 12,
+                "all": 12,
+                "unit": "кг"
+            }
+        ]
+        self.assertEqual(data, correct_data)
+        
+        data = fw.table_for_companies(1, 3)
+        
+        correct_data = [
+            {
+                "seller": "Seller1",
+                "product": "Product1",
                 "count": 50,
                 "qty": 5,
                 "all": 250,
@@ -243,15 +289,15 @@ class TestFileWorker(unittest.TestCase):
             },
             {
                 "seller": "Seller3",
-                "product": "Product3",
-                "count": 1,
-                "qty": 12,
-                "all": 12,
-                "unit": "кг"
+                "product": "Product4",
+                "count": 665,
+                "qty": 2,
+                "all": 1330,
+                "unit": "шт."
             },
             {
                 "seller": "Seller3",
-                "product": "Product5",
+                "product": "Product3",
                 "count": 1,
                 "qty": 12,
                 "all": 12,
@@ -272,6 +318,14 @@ class TestFileWorker(unittest.TestCase):
                 "qty": 10,
                 "all": 120,
                 "unit": "кг"
+            },
+            {
+                "seller": "Seller3",
+                "product": "Product5",
+                "count": 1,
+                "qty": 12,
+                "all": 12,
+                "unit": "кг"
             }
         ]
-        # self.assertEqual(data, correct_data)
+        self.assertEqual(data, correct_data)
